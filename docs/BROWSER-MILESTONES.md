@@ -8,7 +8,7 @@ Branch: `browser-milestones`.
 
 | Milestone | Required evidence | Current state |
 | --- | --- | --- |
-| 1. Browser rendering | A real MW2 map, working materials, moving camera, browser screenshots, and measured frame times at a recorded resolution on a recorded machine | Blocked pending the user's MW2 game-data path; no rendered map or browser benchmark |
+| 1. Browser rendering | A real MW2 map, working materials, moving camera, browser screenshots, and measured frame times at a recorded resolution on a recorded machine | Blocked: supplied installer images have encrypted archive payloads; no readable MW2 game-data tree, rendered map, or browser benchmark has been verified |
 | 2. Browser gameplay | Collision, movement, one gun, animation, audio, damage, and respawn in that browser build | Not run; depends on milestone 1 |
 | 3. Browser multiplayer | Two browser clients playing through a native server, with movement and combat synchronization verified | Not run; depends on milestone 2 and a browser network transport |
 | 4. Existing cross-game content | One Black Ops 1 map and weapon, repeated map changes, and observed memory behavior | Not run; also requires the user's Black Ops 1 game-data path |
@@ -28,11 +28,27 @@ The networking error confirms a real porting requirement. It is not evidence tha
 
 ## Asset prerequisite
 
-The repository contains no retail game data. No `.ff` or `.iwd` files were found in the searched Documents, Downloads, Steam, CrossOver, or Whisky locations. `IW4L_GAMES` is unset. An additional Spotlight query returned no results before it was stopped; that does not establish the absence of files outside the searched locations.
+The repository contains no retail game data. The initial search found no `.ff` or `.iwd` files in the searched Documents, Downloads, Steam, CrossOver, or Whisky locations. `IW4L_GAMES` is unset. An additional Spotlight query returned no results before it was stopped; that does not establish the absence of files outside the searched locations.
+
+On October 1, 2026, the user supplied two local installer images. Both were inspected without executing the installer:
+
+- `01. CoD_MW2_DVD1.iso`: 4,330,735,616 bytes.
+- `02. CoD_MW2_DVD2.iso`: 2,929,231,872 bytes. The second filename starts with `02`, rather than the `01` in the supplied path.
+- Both ISO creation timestamps are August 20, 2011. The installer metadata identifies Inno Setup 5.4.2. This is repackaged installation media rather than a verified installed game-data tree.
+- Payloads `data1.bin` through `data5.bin`, plus `data8.bin`, have 7z headers and request a password during archive listing. Payloads `data6.bin` and `data7.bin` have FreeArc headers. The installer itself is not passworded, which does not remove the passwords on its external archives.
+- No `main`/`zone` directory, multiplayer map, or shared multiplayer asset has been verified inside those payloads. No installer or extracted DLL was executed. Both temporary read-only mounts were detached.
+
+Base-game maps are sufficient for the initial milestones; missing DLC is not the current blocker. The next input is a readable installed/extracted MW2 PC data tree, or the archive password needed to inspect the supplied payloads.
 
 The user was asked for the local installation paths. MW2 2009 needs its game-data tree, including `zone` fastfiles and `main` archives; Black Ops 1 needs the corresponding tree for milestone 4. A single map file is insufficient because shared materials, models, animations, weapons, and audio live in other files.
 
 Work stops at this missing-input condition, as requested. Synthetic geometry or a different game's browser build would not satisfy milestone 1.
+
+## Additional data needed later
+
+- Milestone 4 requires Black Ops 1 (2010) PC game data, including its shared files, multiplayer maps, weapons, and audio. Preserve the whole installation layout rather than supplying one map alone.
+- Halo is outside milestones 1–4. The reference [native setup](https://github.com/0xburn/halo-mw2-director/blob/main/docs/NATIVE_SETUP.md) uses original Xbox Halo: Combat Evolved cache-format version 5, with `bloodgulch.map` for character/weapon conversion. The [experimental map importer](https://github.com/0xburn/halo-mw2-director/blob/main/docs/HALO_MAPS.md) first targets Battle Creek, whose filename is `beavercreek.map`. These assets are not included in IW4L or the reference repository. Other Halo editions are not interchangeable without checking or adapting their formats.
+- The first Halo map integration uses MW2 gameplay; it does not establish authentic Halo vehicle physics, teleporters, pickups, or rules. Those remain later implementation work.
 
 ## Resume procedure
 
